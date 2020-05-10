@@ -905,7 +905,7 @@ typedef enum
 typedef struct _jit_intrinsic_info _jit_intrinsic_info_t;
 struct _jit_intrinsic_info
 {
-	jit_short	flags;
+	int	flags;
 	jit_short	signature;
 	void 		*intrinsic;
 };

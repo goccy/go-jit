@@ -1632,7 +1632,7 @@ jit_int jit_float32_is_finite(jit_float32 value)
 #if defined(HAVE_FINITEF)
 	return finitef(value);
 #elif defined(HAVE_FINITE)
-	return finite(value);
+	return isfinite(value);
 #else /* !HAVE_FINITE */
 #if defined(HAVE_ISNANF) && defined(HAVE_ISINFF)
 	return (!isnanf(value) && isinff(value) == 0);
@@ -2122,7 +2122,7 @@ jit_int jit_float64_is_finite(jit_float64 value)
 	return isfinite(value);
 #else /* !hpux */
 #if defined(HAVE_FINITE)
-	return finite(value);
+	return isfinite(value);
 #else /* !HAVE_FINITE */
 #if defined(HAVE_ISNAN) && defined(HAVE_ISINF)
 	return (!isnan(value) && isinf(value) == 0);
@@ -2685,7 +2685,7 @@ jit_int jit_nfloat_is_finite(jit_nfloat value)
 #if defined(HAVE_FINITEL) && !defined(JIT_NFLOAT_IS_DOUBLE)
 	return finitel(value);
 #elif defined(HAVE_FINITE)
-	return finite(value);
+	return isfinite(value);
 #else /* !HAVE_FINITE */
 #if defined(HAVE_ISNANL) && defined(HAVE_ISINFL) && \
 		!defined(JIT_NFLOAT_IS_DOUBLE)
