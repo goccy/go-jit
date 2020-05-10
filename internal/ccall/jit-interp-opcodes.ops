@@ -1,0 +1,220 @@
+%{
+/*
+ * jit-interp-opcode.c - Information about interpreter specific JIT opcodes.
+ *
+ * Copyright (C) 2004  Southern Storm Software, Pty Ltd.
+ *
+ * This file is part of the libjit library.
+ *
+ * The libjit library is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation, either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * The libjit library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with the libjit library.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
+#include "jit-internal.h"
+#include "jit-interp-opcode.h"
+#include "jit-rules.h"
+
+#if defined(JIT_BACKEND_INTERP)
+
+%}
+
+%[
+/*
+ * jit-interp-opcode.h - List of interpreter specific opcodes for
+ *			 JIT instructions.
+ *
+ * Copyright (C) 2004  Southern Storm Software, Pty Ltd.
+ *
+ * The libjit library is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation, either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * The libjit library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with the libjit library.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef	_JIT_INTERP_OPCODE_H
+#define	_JIT_INTERP_OPCODE_H
+
+#include <jit/jit-defs.h>
+
+#ifdef	__cplusplus
+extern	"C" {
+#endif
+
+%]
+
+opcodes(JIT_INTERP_OP_,
+	"jit_opcode_info_t const _jit_interp_opcodes[JIT_INTERP_OP_NUM_OPCODES]",
+	"JIT_OP_NUM_OPCODES")
+{
+	/*
+	 * Argument variable access opcodes.
+	 */
+	op_def("lda_0_sbyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_0_ubyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_0_short") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_0_ushort") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_0_int") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_0_long") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_0_float32") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_0_float64") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_0_nfloat") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldaa_0") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_1_sbyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_1_ubyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_1_short") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_1_ushort") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_1_int") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_1_long") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_1_float32") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_1_float64") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_1_nfloat") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldaa_1") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_2_sbyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_2_ubyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_2_short") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_2_ushort") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_2_int") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_2_long") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_2_float32") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_2_float64") { "JIT_OPCODE_NINT_ARG" }
+	op_def("lda_2_nfloat") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldaa_2") { "JIT_OPCODE_NINT_ARG" }
+	op_def("sta_0_byte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("sta_0_short") { "JIT_OPCODE_NINT_ARG" }
+	op_def("sta_0_int") { "JIT_OPCODE_NINT_ARG" }
+	op_def("sta_0_long") { "JIT_OPCODE_NINT_ARG" }
+	op_def("sta_0_float32") { "JIT_OPCODE_NINT_ARG" }
+	op_def("sta_0_float64") { "JIT_OPCODE_NINT_ARG" }
+	op_def("sta_0_nfloat") { "JIT_OPCODE_NINT_ARG" }
+	/*
+	 * Local variable frame access opcodes.
+	 */
+	op_def("ldl_0_sbyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_0_ubyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_0_short") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_0_ushort") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_0_int") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_0_long") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_0_float32") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_0_float64") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_0_nfloat") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldla_0") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_1_sbyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_1_ubyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_1_short") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_1_ushort") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_1_int") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_1_long") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_1_float32") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_1_float64") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_1_nfloat") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldla_1") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_2_sbyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_2_ubyte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_2_short") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_2_ushort") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_2_int") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_2_long") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_2_float32") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_2_float64") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldl_2_nfloat") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldla_2") { "JIT_OPCODE_NINT_ARG" }
+	op_def("stl_0_byte") { "JIT_OPCODE_NINT_ARG" }
+	op_def("stl_0_short") { "JIT_OPCODE_NINT_ARG" }
+	op_def("stl_0_int") { "JIT_OPCODE_NINT_ARG" }
+	op_def("stl_0_long") { "JIT_OPCODE_NINT_ARG" }
+	op_def("stl_0_float32") { "JIT_OPCODE_NINT_ARG" }
+	op_def("stl_0_float64") { "JIT_OPCODE_NINT_ARG" }
+	op_def("stl_0_nfloat") { "JIT_OPCODE_NINT_ARG" }
+	/*
+	 * Load constant values.
+	 */
+	op_def("ldc_0_int") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldc_1_int") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldc_2_int") { "JIT_OPCODE_NINT_ARG" }
+	op_def("ldc_0_long") { "JIT_OPCODE_CONST_LONG" }
+	op_def("ldc_1_long") { "JIT_OPCODE_CONST_LONG" }
+	op_def("ldc_2_long") { "JIT_OPCODE_CONST_LONG" }
+	op_def("ldc_0_float32") { "JIT_OPCODE_CONST_FLOAT32" }
+	op_def("ldc_1_float32") { "JIT_OPCODE_CONST_FLOAT32" }
+	op_def("ldc_2_float32") { "JIT_OPCODE_CONST_FLOAT32" }
+	op_def("ldc_0_float64") { "JIT_OPCODE_CONST_FLOAT64" }
+	op_def("ldc_1_float64") { "JIT_OPCODE_CONST_FLOAT64" }
+	op_def("ldc_2_float64") { "JIT_OPCODE_CONST_FLOAT64" }
+	op_def("ldc_0_nfloat") { "JIT_OPCODE_CONST_NFLOAT" }
+	op_def("ldc_1_nfloat") { "JIT_OPCODE_CONST_NFLOAT" }
+	op_def("ldc_2_nfloat") { "JIT_OPCODE_CONST_NFLOAT" }
+	/*
+	 * Load return value.
+	 */
+	op_def("ldr_0_int") { }
+	op_def("ldr_0_long") { }
+	op_def("ldr_0_float32") { }
+	op_def("ldr_0_float64") { }
+	op_def("ldr_0_nfloat") { }
+	/*
+	 * Stack management.
+	 */
+	op_def("pop") { }
+	op_def("pop_2") { }
+	op_def("pop_3") { }
+	/*
+	 * Marker opcode for the end of a function.
+	 */
+	op_def("end_marker") { }
+}
+
+%[
+
+/*
+ * Opcode version.  Should be increased whenever new opcodes
+ * are added to this list or the public list in "jit-opcode.h".
+ * This value is written to ELF binaries, to ensure that code
+ * for one version of libjit is not inadvertantly used in another.
+ */
+#define	JIT_OPCODE_VERSION					0
+
+/*
+ * Additional opcode definition flags.
+ */
+#define	JIT_OPCODE_INTERP_ARGS_MASK			0x7E000000
+#define	JIT_OPCODE_NINT_ARG					0x02000000
+#define	JIT_OPCODE_NINT_ARG_TWO				0x04000000
+#define	JIT_OPCODE_CONST_LONG				0x06000000
+#define	JIT_OPCODE_CONST_FLOAT32			0x08000000
+#define	JIT_OPCODE_CONST_FLOAT64			0x0A000000
+#define	JIT_OPCODE_CONST_NFLOAT				0x0C000000
+#define	JIT_OPCODE_CALL_INDIRECT_ARGS		0x0E000000
+
+extern jit_opcode_info_t const _jit_interp_opcodes[JIT_INTERP_OP_NUM_OPCODES];
+
+#ifdef	__cplusplus
+};
+#endif
+
+#endif /* _JIT_INTERP_OPCODE_H */
+%]
+
+%{
+#endif /* defined(JIT_BACKEND_INTERP) */
+%}

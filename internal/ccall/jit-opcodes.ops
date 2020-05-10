@@ -1,0 +1,959 @@
+%{
+/*
+ * jit-opcode.c - Information about all of the JIT opcodes.
+ *
+ * Copyright (C) 2004  Southern Storm Software, Pty Ltd.
+ *
+ * This file is part of the libjit library.
+ *
+ * The libjit library is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation, either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * The libjit library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with the libjit library.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
+#include "jit-internal.h"
+#include "jit-rules.h"
+
+#if defined(JIT_BACKEND_INTERP)
+	#define	NINT_ARG			JIT_OPCODE_NINT_ARG
+	#define	NINT_ARG_TWO		JIT_OPCODE_NINT_ARG_TWO
+	#define	INDIRECT_ARGS		JIT_OPCODE_CALL_INDIRECT_ARGS
+#else
+	#define	NINT_ARG			0
+	#define	NINT_ARG_TWO		0
+	#define	INDIRECT_ARGS		0
+#endif
+
+%}
+
+%[
+/*
+ * jit-opcode.h - List of primitive opcodes for JIT instructions.
+ *
+ * Copyright (C) 2004  Southern Storm Software, Pty Ltd.
+ *
+ * The libjit library is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation, either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * The libjit library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with the libjit library.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef	_JIT_OPCODE_H
+#define	_JIT_OPCODE_H
+
+#include <jit/jit-defs.h>
+
+#ifdef	__cplusplus
+extern	"C" {
+#endif
+
+%]
+
+%option gen_intrinsic_table = yes
+%option intrinsic_table_decl = "_jit_intrinsic_info_t const _jit_intrinsics[JIT_OP_NUM_OPCODES]"
+
+opcodes(JIT_OP_, "jit_opcode_info_t const jit_opcodes[JIT_OP_NUM_OPCODES]")
+{
+	op_def("nop") { }
+	/*
+	 * Conversion opcodes
+	 */
+	op_def("trunc_sbyte") { op_values(int, int),
+				op_intrinsic(conv) }
+	op_def("trunc_ubyte") { op_values(int, int),
+				op_intrinsic(conv) }
+	op_def("trunc_short") { op_values(int, int),
+				op_intrinsic(conv) }
+	op_def("trunc_ushort") { op_values(int, int),
+				 op_intrinsic(conv) }
+	op_def("trunc_int") { op_values(int, int),
+			      op_intrinsic(conv) }
+	op_def("trunc_uint") { op_values(int, int),
+			       op_intrinsic(conv) }
+	op_def("check_sbyte") { op_values(int, int) }
+	op_def("check_ubyte") { op_values(int, int) }
+	op_def("check_short") { op_values(int, int) }
+	op_def("check_ushort") { op_values(int, int) }
+	op_def("check_int") { op_values(int, int) }
+	op_def("check_uint") { op_values(int, int) }
+	op_def("low_word") { op_values(int, long),
+			     op_intrinsic(conv) }
+	op_def("expand_int") { op_values(long, int),
+			       op_intrinsic(conv) }
+	op_def("expand_uint") { op_values(long, int),
+				op_intrinsic(conv) }
+	op_def("check_low_word") { op_values(int, long) }
+	op_def("check_signed_low_word") { op_values(int, long) }
+	op_def("check_long") { op_values(long, long) }
+	op_def("check_ulong") { op_values(long, long) }
+	op_def("float32_to_int") { op_values(int, float32),
+				   op_intrinsic(conv) }
+	op_def("float32_to_uint") { op_values(int, float32),
+				    op_intrinsic(conv) }
+	op_def("float32_to_long") { op_values(long, float32),
+				    op_intrinsic(conv) }
+	op_def("float32_to_ulong") { op_values(long, float32),
+				     op_intrinsic(conv) }
+	op_def("check_float32_to_int") { op_values(int, float32) }
+	op_def("check_float32_to_uint") { op_values(int, float32) }
+	op_def("check_float32_to_long") { op_values(long, float32) }
+	op_def("check_float32_to_ulong") { op_values(long, float32) }
+	op_def("int_to_float32") { op_values(float32, int),
+				   op_intrinsic(conv) }
+	op_def("uint_to_float32") { op_values(float32, int),
+				    op_intrinsic(conv) }
+	op_def("long_to_float32") { op_values(float32, long),
+				    op_intrinsic(conv) }
+	op_def("ulong_to_float32") { op_values(float32, long),
+				     op_intrinsic(conv) }
+	op_def("float32_to_float64") { op_values(float64, float32),
+				       op_intrinsic(conv) }
+	op_def("float64_to_int") { op_values(int, float64),
+				   op_intrinsic(conv) }
+	op_def("float64_to_uint") { op_values(int, float64),
+				    op_intrinsic(conv) }
+	op_def("float64_to_long") { op_values(long, float64),
+				    op_intrinsic(conv) }
+	op_def("float64_to_ulong") { op_values(long, float64),
+				     op_intrinsic(conv) }
+	op_def("check_float64_to_int") { op_values(int, float64) }
+	op_def("check_float64_to_uint") { op_values(int, float64) }
+	op_def("check_float64_to_long") { op_values(long, float64) }
+	op_def("check_float64_to_ulong") { op_values(long, float64) }
+	op_def("int_to_float64") { op_values(float64, int),
+				   op_intrinsic(conv) }
+	op_def("uint_to_float64") { op_values(float64, int),
+				    op_intrinsic(conv) }
+	op_def("long_to_float64") { op_values(float64, long),
+				    op_intrinsic(conv) }
+	op_def("ulong_to_float64") { op_values(float64, long),
+				     op_intrinsic(conv) }
+	op_def("float64_to_float32") { op_values(float32, float64),
+				       op_intrinsic(conv) }
+	op_def("nfloat_to_int") { op_values(int, nfloat),
+				  op_intrinsic(conv) }
+	op_def("nfloat_to_uint") { op_values(int, nfloat),
+				   op_intrinsic(conv) }
+	op_def("nfloat_to_long") { op_values(long, nfloat),
+				   op_intrinsic(conv) }
+	op_def("nfloat_to_ulong") { op_values(long, nfloat),
+				    op_intrinsic(conv) }
+	op_def("check_nfloat_to_int") { op_values(int, nfloat) }
+	op_def("check_nfloat_to_uint") { op_values(int, nfloat) }
+	op_def("check_nfloat_to_long") { op_values(long, nfloat) }
+	op_def("check_nfloat_to_ulong") { op_values(long, nfloat) }
+	op_def("int_to_nfloat") { op_values(nfloat, int),
+				  op_intrinsic(conv) }
+	op_def("uint_to_nfloat") { op_values(nfloat, int),
+				   op_intrinsic(conv) }
+	op_def("long_to_nfloat") { op_values(nfloat, long),
+				   op_intrinsic(conv) }
+	op_def("ulong_to_nfloat") { op_values(nfloat, long),
+				    op_intrinsic(conv) }
+	op_def("nfloat_to_float32") { op_values(float32, nfloat),
+				      op_intrinsic(conv) }
+	op_def("nfloat_to_float64") { op_values(float64, nfloat),
+				      op_intrinsic(conv) }
+	op_def("float32_to_nfloat") { op_values(nfloat, float32),
+				      op_intrinsic(conv) }
+	op_def("float64_to_nfloat") { op_values(nfloat, float64),
+				      op_intrinsic(conv) }
+	/*
+	 * Arithmetic opcodes.
+	 */
+	op_def("iadd", +) { op_values(int, int, int),
+			    op_intrinsic(jit_int_add, i_ii) }
+	op_def("iadd_ovf") { op_values(int, int, int),
+			     op_intrinsic(jit_int_add_ovf, i_piii) }
+	op_def("iadd_ovf_un") { op_values(int, int, int),
+				op_intrinsic(jit_uint_add_ovf, i_pIII) }
+	op_def("isub", -) { op_values(int, int, int),
+			    op_intrinsic(jit_int_sub, i_ii) }
+	op_def("isub_ovf") { op_values(int, int, int),
+			     op_intrinsic(jit_int_sub_ovf, i_piii) }
+	op_def("isub_ovf_un") { op_values(int, int, int),
+				op_intrinsic(jit_uint_sub_ovf, i_pIII) }
+	op_def("imul", *) { op_values(int, int, int),
+			    op_intrinsic(jit_int_mul, i_ii) }
+	op_def("imul_ovf") { op_values(int, int, int),
+			     op_intrinsic(jit_int_mul_ovf, i_piii) }
+	op_def("imul_ovf_un") { op_values(int, int, int),
+				op_intrinsic(jit_uint_mul_ovf, i_pIII) }
+	op_def("idiv", /) { op_values(int, int, int),
+			    op_intrinsic(jit_int_div, i_piii) }
+	op_def("idiv_un") { op_values(int, int, int),
+			    op_intrinsic(jit_uint_div, i_pIII) }
+	op_def("irem", %) { op_values(int, int, int),
+			    op_intrinsic(jit_int_rem, i_piii) }
+	op_def("irem_un") { op_values(int, int, int),
+			    op_intrinsic(jit_uint_rem, i_pIII) }
+	op_def("ineg", neg) { op_values(int, int),
+			      op_intrinsic(jit_int_neg, i_i) }
+	op_def("ladd", +) { op_values(long, long, long),
+			    op_intrinsic(jit_long_add, l_ll) }
+	op_def("ladd_ovf") { op_values(long, long, long),
+			     op_intrinsic(jit_long_add_ovf, i_plll) }
+	op_def("ladd_ovf_un") { op_values(long, long, long),
+				op_intrinsic(jit_ulong_add_ovf, i_pLLL) }
+	op_def("lsub", -) { op_values(long, long, long),
+			    op_intrinsic(jit_long_sub, l_ll) }
+	op_def("lsub_ovf") { op_values(long, long, long),
+			     op_intrinsic(jit_long_sub_ovf, i_plll) }
+	op_def("lsub_ovf_un") { op_values(long, long, long),
+				op_intrinsic(jit_ulong_sub_ovf, i_pLLL) }
+	op_def("lmul", *) { op_values(long, long, long),
+			    op_intrinsic(jit_long_mul, l_ll) }
+	op_def("lmul_ovf") { op_values(long, long, long),
+			     op_intrinsic(jit_long_mul_ovf, i_plll) }
+	op_def("lmul_ovf_un") { op_values(long, long, long),
+				op_intrinsic(jit_ulong_mul_ovf, i_pLLL) }
+	op_def("ldiv", /) { op_values(long, long, long),
+			    op_intrinsic(jit_long_div, i_plll) }
+	op_def("ldiv_un") { op_values(long, long, long),
+			    op_intrinsic(jit_ulong_div, i_pLLL) }
+	op_def("lrem", %) { op_values(long, long, long),
+			    op_intrinsic(jit_long_rem, i_plll) }
+	op_def("lrem_un") { op_values(long, long, long),
+			    op_intrinsic(jit_ulong_rem, i_pLLL) }
+	op_def("lneg", neg) { op_values(long, long),
+			      op_intrinsic(jit_long_neg, l_l) }
+	op_def("fadd", +) { op_values(float32, float32, float32),
+			    op_intrinsic(jit_float32_add, f_ff) }
+	op_def("fsub", -) { op_values( float32, float32, float32),
+			    op_intrinsic(jit_float32_sub, f_ff) }
+	op_def("fmul", *) { op_values(float32, float32, float32),
+			    op_intrinsic(jit_float32_mul, f_ff) }
+	op_def("fdiv", /) { op_values(float32, float32, float32),
+			    op_intrinsic(jit_float32_div, f_ff) }
+	op_def("frem", %) { op_values(float32, float32, float32),
+			    op_intrinsic(jit_float32_rem, f_ff) }
+	op_def("frem_ieee") { op_values(float32, float32, float32),
+			      op_intrinsic(jit_float32_ieee_rem, f_ff) }
+	op_def("fneg", neg) { op_values(float32, float32),
+			      op_intrinsic(jit_float32_neg, f_f) }
+	op_def("dadd", +) { op_values(float64, float64, float64),
+			    op_intrinsic(jit_float64_add, d_dd) }
+	op_def("dsub", -) { op_values(float64, float64, float64),
+			    op_intrinsic(jit_float64_sub, d_dd) }
+	op_def("dmul", *) { op_values(float64, float64, float64),
+			    op_intrinsic(jit_float64_mul, d_dd) }
+	op_def("ddiv", /) { op_values(float64, float64, float64),
+			    op_intrinsic(jit_float64_div, d_dd) }
+	op_def("drem", %) { op_values(float64, float64, float64),
+			    op_intrinsic(jit_float64_rem, d_dd) }
+	op_def("drem_ieee") { op_values(float64, float64, float64),
+			      op_intrinsic(jit_float64_ieee_rem, d_dd) }
+	op_def("dneg", neg) { op_values(float64, float64),
+			      op_intrinsic(jit_float64_neg, d_d) }
+	op_def("nfadd", +) { op_values(nfloat, nfloat, nfloat),
+			     op_intrinsic(jit_nfloat_add, D_DD) }
+	op_def("nfsub", -) { op_values(nfloat, nfloat, nfloat),
+			     op_intrinsic(jit_nfloat_sub, D_DD) }
+	op_def("nfmul", *) { op_values(nfloat, nfloat, nfloat),
+			     op_intrinsic(jit_nfloat_mul, D_DD) }
+	op_def("nfdiv", /) { op_values(nfloat, nfloat, nfloat),
+			     op_intrinsic(jit_nfloat_div, D_DD) }
+	op_def("nfrem", %) { op_values(nfloat, nfloat, nfloat),
+			     op_intrinsic(jit_nfloat_rem, D_DD) }
+	op_def("nfrem_ieee") { op_values(nfloat, nfloat, nfloat),
+			       op_intrinsic(jit_nfloat_ieee_rem, D_DD) }
+	op_def("nfneg", neg) { op_values(nfloat, nfloat),
+			       op_intrinsic(jit_nfloat_neg, D_D) }
+	/*
+	 * Bitwise opcodes.
+	 */
+	op_def("iand", &) { op_values(int, int, int),
+			    op_intrinsic(jit_int_and, i_ii) }
+	op_def("ior", |) { op_values(int, int, int),
+			   op_intrinsic(jit_int_or, i_ii) }
+	op_def("ixor", ^) { op_values(int, int, int),
+			    op_intrinsic(jit_int_xor, i_ii) }
+	op_def("inot", ~) { op_values(int, int),
+			    op_intrinsic(jit_int_not, i_i) }
+	op_def("ishl", <<) { op_values(int, int, int),
+			     op_intrinsic(jit_int_shl, i_iI) }
+	op_def("ishr", >>) { op_values(int, int, int),
+			     op_intrinsic(jit_int_shr, i_iI) }
+	op_def("ishr_un", shr_un) { op_values(int, int, int),
+				    op_intrinsic(jit_uint_shr, i_iI) }
+	op_def("land", &) { op_values(long, long, long),
+			    op_intrinsic(jit_long_and, l_ll) }
+	op_def("lor", |) { op_values(long, long, long),
+			   op_intrinsic(jit_long_or, l_ll) }
+	op_def("lxor", ^) { op_values(long, long, long),
+			    op_intrinsic(jit_long_xor, l_ll) }
+	op_def("lnot", ~) { op_values(long, long),
+			    op_intrinsic(jit_long_not, l_l) }
+	op_def("lshl", <<) { op_values(long, long, int),
+			     op_intrinsic(jit_long_shl, l_lI) }
+	op_def("lshr", >>) { op_values(long, long, int),
+			     op_intrinsic(jit_long_shr, l_lI) }
+	op_def("lshr_un", shr_un) { op_values(long, long, int),
+				    op_intrinsic(jit_ulong_shr, L_LI) }
+	/*
+	 * Branch opcodes.
+	 */
+	op_def("br") { op_type(branch) }
+	op_def("br_ifalse") { op_type(branch), op_values(empty, int),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH_UNARY | _JIT_INTRINSIC_FLAG_IFALSE") }
+	op_def("br_itrue") { op_type(branch), op_values(empty, int),
+			     op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH_UNARY | _JIT_INTRINSIC_FLAG_ITRUE") }
+	op_def("br_ieq", ==) { op_type(branch), op_values(empty, int, int),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_IEQ") }
+	op_def("br_ine", !=) { op_type(branch), op_values(empty, int, int),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_INE") }
+	op_def("br_ilt", <) { op_type(branch), op_values(empty, int, int),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_ILT") }
+	op_def("br_ilt_un") { op_type(branch), op_values(empty, int, int),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_ILT_UN") }
+	op_def("br_ile", <=) { op_type(branch), op_values(empty, int, int),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_ILE") }
+	op_def("br_ile_un") { op_type(branch), op_values(empty, int, int),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_ILE_UN") }
+	op_def("br_igt", >) { op_type(branch), op_values(empty, int, int),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_IGT") }
+	op_def("br_igt_un") { op_type(branch), op_values(empty, int, int),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_IGT_UN") }
+	op_def("br_ige", >=) { op_type(branch), op_values(empty, int, int),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_IGE") }
+	op_def("br_ige_un") { op_type(branch), op_values(empty, int, int),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_IGE_UN") }
+	op_def("br_lfalse") { op_type(branch), op_values(empty, long),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH_UNARY | _JIT_INTRINSIC_FLAG_LFALSE") }
+	op_def("br_ltrue") { op_type(branch), op_values(empty, long),
+			     op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH_UNARY | _JIT_INTRINSIC_FLAG_LTRUE") }
+	op_def("br_leq", ==) { op_type(branch), op_values(empty, long, long),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_LEQ") }
+	op_def("br_lne", !=) { op_type(branch), op_values(empty, long, long),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_LNE") }
+	op_def("br_llt", <) { op_type(branch), op_values(empty, long, long),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_LLT") }
+	op_def("br_llt_un") { op_type(branch), op_values(empty, long, long),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_LLT_UN") }
+	op_def("br_lle", <=) { op_type(branch), op_values(empty, long, long),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_LLE") }
+	op_def("br_lle_un") { op_type(branch), op_values(empty, long, long),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_LLE_UN") }
+	op_def("br_lgt", >) { op_type(branch), op_values(empty, long, long),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_LGT") }
+	op_def("br_lgt_un") { op_type(branch), op_values(empty, long, long),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_LGT_UN") }
+	op_def("br_lge", >=) { op_type(branch), op_values(empty, long, long),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_LGE") }
+	op_def("br_lge_un") { op_type(branch), op_values(empty, long, long),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_LGE_UN") }
+	op_def("br_feq", ==) { op_type(branch), op_values(empty, float32, float32),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_FEQ") }
+	op_def("br_fne", !=) { op_type(branch), op_values(empty, float32, float32),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_FNE") }
+	op_def("br_flt", <) { op_type(branch), op_values(empty, float32, float32),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_FLT") }
+	op_def("br_fle", <=) { op_type(branch), op_values(empty, float32, float32),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_FLE") }
+	op_def("br_fgt", >) { op_type(branch), op_values(empty, float32, float32),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_FGT") }
+	op_def("br_fge", >=) { op_type(branch), op_values(empty, float32, float32),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_FGE") }
+	op_def("br_flt_inv") { op_type(branch), op_values(empty, float32, float32),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_FLT_INV") }
+	op_def("br_fle_inv") { op_type(branch), op_values(empty, float32, float32),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_FLE_INV") }
+	op_def("br_fgt_inv") { op_type(branch), op_values(empty, float32, float32),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_FGT_INV") }
+	op_def("br_fge_inv") { op_type(branch), op_values(empty, float32, float32),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_FGE_INV") }
+	op_def("br_deq", ==) { op_type(branch), op_values(empty, float64, float64),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_DEQ") }
+	op_def("br_dne", !=) { op_type(branch), op_values(empty, float64, float64),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_DNE") }
+	op_def("br_dlt", <) { op_type(branch), op_values(empty, float64, float64),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_DLT") }
+	op_def("br_dle", <=) { op_type(branch), op_values(empty, float64, float64),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_DLE") }
+	op_def("br_dgt", >) { op_type(branch), op_values(empty, float64, float64),
+			      op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_DGT") }
+	op_def("br_dge", >=) { op_type(branch), op_values(empty, float64, float64),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_DGE") }
+	op_def("br_dlt_inv") { op_type(branch), op_values(empty, float64, float64),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_DLT_INV") }
+	op_def("br_dle_inv") { op_type(branch), op_values(empty, float64, float64),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_DLE_INV") }
+	op_def("br_dgt_inv") { op_type(branch), op_values(empty, float64, float64),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_DGT_INV") }
+	op_def("br_dge_inv") { op_type(branch), op_values(empty, float64, float64),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_DGE_INV") }
+	op_def("br_nfeq", ==) { op_type(branch), op_values(empty, nfloat, nfloat),
+				op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_NFEQ") }
+	op_def("br_nfne", !=) { op_type(branch), op_values(empty, nfloat, nfloat),
+				op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_NFNE") }
+	op_def("br_nflt", <) { op_type(branch), op_values(empty, nfloat, nfloat),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_NFLT") }
+	op_def("br_nfle", <=) { op_type(branch), op_values(empty, nfloat, nfloat),
+				op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_NFLE") }
+	op_def("br_nfgt", >) { op_type(branch), op_values(empty, nfloat, nfloat),
+			       op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_NFGT") }
+	op_def("br_nfge", >=) { op_type(branch), op_values(empty, nfloat, nfloat),
+				op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_NFGE") }
+	op_def("br_nflt_inv") { op_type(branch), op_values(empty, nfloat, nfloat),
+				op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_NFLT_INV") }
+	op_def("br_nfle_inv") { op_type(branch), op_values(empty, nfloat, nfloat),
+				op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_NFLE_INV") }
+	op_def("br_nfgt_inv") { op_type(branch), op_values(empty, nfloat, nfloat),
+				op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_NFGT_INV") }
+	op_def("br_nfge_inv") { op_type(branch), op_values(empty, nfloat, nfloat),
+				op_intrinsic("_JIT_INTRINSIC_FLAG_BRANCH | JIT_OP_NFGE_INV") }
+	/*
+	 * Comparison opcodes.
+	 */
+	op_def("icmp") { op_values(int, int, int),
+			 op_intrinsic(jit_int_cmp, i_ii) }
+	op_def("icmp_un") { op_values(int, int, int),
+			    op_intrinsic(jit_uint_cmp, i_II) }
+	op_def("lcmp") { op_values(int, long, long),
+			 op_intrinsic(jit_long_cmp, i_ll) }
+	op_def("lcmp_un") { op_values(int, long, long),
+			    op_intrinsic(jit_ulong_cmp, i_LL) }
+	op_def("fcmpl") { op_values(int, float32, float32),
+			  op_intrinsic(jit_float32_cmpl, i_ff) }
+	op_def("fcmpg") { op_values(int, float32, float32),
+			  op_intrinsic(jit_float32_cmpg, i_ff) }
+	op_def("dcmpl") { op_values(int, float64, float64),
+			  op_intrinsic(jit_float64_cmpl, i_dd) }
+	op_def("dcmpg") { op_values(int, float64, float64),
+			  op_intrinsic(jit_float64_cmpg, i_dd) }
+	op_def("nfcmpl") { op_values(int, nfloat, nfloat),
+			   op_intrinsic(jit_nfloat_cmpl, i_DD) }
+	op_def("nfcmpg") { op_values(int, nfloat, nfloat),
+			   op_intrinsic(jit_nfloat_cmpg, i_DD) }
+	op_def("ieq", ==) { op_values(int, int, int),
+			    op_intrinsic(jit_int_eq, i_ii) }
+	op_def("ine", !=) { op_values(int, int, int),
+			    op_intrinsic(jit_int_ne, i_ii) }
+	op_def("ilt", <) { op_values(int, int, int),
+			   op_intrinsic(jit_int_lt, i_ii) }
+	op_def("ilt_un") { op_values(int, int, int),
+			   op_intrinsic(jit_uint_lt, i_II) }
+	op_def("ile", <=) { op_values(int, int, int),
+			    op_intrinsic(jit_int_le, i_ii) }
+	op_def("ile_un") { op_values(int, int, int),
+			   op_intrinsic(jit_uint_le, i_II) }
+	op_def("igt", >) { op_values(int, int, int),
+			   op_intrinsic(jit_int_gt, i_ii) }
+	op_def("igt_un") { op_values(int, int, int),
+			   op_intrinsic(jit_uint_gt, i_II) }
+	op_def("ige", >=) { op_values(int, int, int),
+			    op_intrinsic(jit_int_ge, i_ii) }
+	op_def("ige_un") { op_values(int, int, int),
+			   op_intrinsic(jit_uint_ge, i_II) }
+	op_def("leq", ==) { op_values(int, long, long),
+			    op_intrinsic(jit_long_eq, i_ll) }
+	op_def("lne", !=) { op_values(int, long, long),
+			    op_intrinsic(jit_long_ne, i_ll) }
+	op_def("llt", <) { op_values(int, long, long),
+			   op_intrinsic(jit_long_lt, i_ll) }
+	op_def("llt_un") { op_values(int, long, long),
+			   op_intrinsic(jit_ulong_lt, i_LL) }
+	op_def("lle", <=) { op_values(int, long, long),
+			    op_intrinsic(jit_long_le, i_ll) }
+	op_def("lle_un") { op_values(int, long, long),
+			   op_intrinsic(jit_ulong_le, i_LL) }
+	op_def("lgt", >) { op_values(int, long, long),
+			   op_intrinsic(jit_long_gt, i_ll) }
+	op_def("lgt_un") { op_values(int, long, long),
+			   op_intrinsic(jit_ulong_gt, i_LL) }
+	op_def("lge", >=) { op_values(int, long, long),
+			    op_intrinsic(jit_long_ge, i_ll) }
+	op_def("lge_un") { op_values(int, long, long),
+			   op_intrinsic(jit_ulong_ge, i_LL) }
+	op_def("feq", ==) { op_values(int, float32, float32),
+			    op_intrinsic(jit_float32_eq, i_ff) }
+	op_def("fne", !=) { op_values(int, float32, float32),
+			    op_intrinsic(jit_float32_ne, i_ff) }
+	op_def("flt", <) { op_values(int, float32, float32),
+			   op_intrinsic(jit_float32_lt, i_ff) }
+	op_def("fle", <=) { op_values(int, float32, float32),
+			    op_intrinsic(jit_float32_le, i_ff) }
+	op_def("fgt", >) { op_values(int, float32, float32),
+			   op_intrinsic(jit_float32_gt, i_ff) }
+	op_def("fge", >=) { op_values(int, float32, float32),
+			    op_intrinsic(jit_float32_ge, i_ff) }
+	op_def("flt_inv") { op_values(int, float32, float32),
+			    op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_FGE") }
+	op_def("fle_inv") { op_values(int, float32, float32),
+			    op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_FGT") }
+	op_def("fgt_inv") { op_values(int, float32, float32),
+			    op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_FLE") }
+	op_def("fge_inv") { op_values(int, float32, float32),
+			    op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_FLT") }
+	op_def("deq", ==) { op_values(int, float64, float64),
+			    op_intrinsic(jit_float64_eq, i_dd) }
+	op_def("dne", !=) { op_values(int, float64, float64),
+			    op_intrinsic(jit_float64_ne, i_dd) }
+	op_def("dlt", <) { op_values(int, float64, float64),
+			   op_intrinsic(jit_float64_lt, i_dd) }
+	op_def("dle", <=) { op_values(int, float64, float64),
+			    op_intrinsic(jit_float64_le, i_dd) }
+	op_def("dgt", >) { op_values(int, float64, float64),
+			   op_intrinsic(jit_float64_gt, i_dd) }
+	op_def("dge", >=) { op_values(int, float64, float64),
+			    op_intrinsic(jit_float64_ge, i_dd) }
+	op_def("dlt_inv") { op_values(int, float64, float64),
+			    op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_DGE") }
+	op_def("dle_inv") { op_values(int, float64, float64),
+			    op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_DGT") }
+	op_def("dgt_inv") { op_values(int, float64, float64),
+			    op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_DLE") }
+	op_def("dge_inv") { op_values(int, float64, float64),
+			    op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_DLT") }
+	op_def("nfeq", ==) { op_values(int, nfloat, nfloat),
+			     op_intrinsic(jit_nfloat_eq, i_DD) }
+	op_def("nfne", !=) { op_values(int, nfloat, nfloat),
+			     op_intrinsic(jit_nfloat_ne, i_DD) }
+	op_def("nflt", <) { op_values(int, nfloat, nfloat),
+			    op_intrinsic(jit_nfloat_lt, i_DD) }
+	op_def("nfle", <=) { op_values(int, nfloat, nfloat),
+			     op_intrinsic(jit_nfloat_le, i_DD) }
+	op_def("nfgt", >) { op_values(int, nfloat, nfloat),
+			    op_intrinsic(jit_nfloat_gt, i_DD) }
+	op_def("nfge", >=) { op_values(int, nfloat, nfloat),
+			     op_intrinsic(jit_nfloat_ge, i_DD) }
+	op_def("nflt_inv") { op_values(int, nfloat, nfloat),
+			     op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_NFGE") }
+	op_def("nfle_inv") { op_values(int, nfloat, nfloat),
+			     op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_NFGT") }
+	op_def("nfgt_inv") { op_values(int, nfloat, nfloat),
+			     op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_NFLE") }
+	op_def("nfge_inv") { op_values(int, nfloat, nfloat),
+			     op_intrinsic("_JIT_INTRINSIC_FLAG_NOT | JIT_OP_NFLT") }
+	op_def("is_fnan") { op_values(int, float32),
+			    op_intrinsic(jit_float32_is_nan, i_f) }
+	op_def("is_finf") { op_values(int, float32),
+			    op_intrinsic(jit_float32_is_inf, i_f) }
+	op_def("is_ffinite") { op_values(int, float32),
+			       op_intrinsic(jit_float32_is_finite, i_f) }
+	op_def("is_dnan") { op_values(int, float64),
+			    op_intrinsic(jit_float64_is_nan, i_d) }
+	op_def("is_dinf") { op_values(int, float64),
+			    op_intrinsic(jit_float64_is_inf, i_d) }
+	op_def("is_dfinite") { op_values(int, float64),
+			       op_intrinsic(jit_float64_is_finite, i_d) }
+	op_def("is_nfnan") { op_values(int, nfloat),
+			     op_intrinsic(jit_nfloat_is_nan, i_D) }
+	op_def("is_nfinf") { op_values(int, nfloat),
+			     op_intrinsic(jit_nfloat_is_inf, i_D) }
+	op_def("is_nffinite") { op_values(int, nfloat),
+				op_intrinsic(jit_nfloat_is_finite, i_D) }
+	/*
+	 * Mathematical functions.
+	 */
+	op_def("facos") { op_values(float32, float32),
+			  op_intrinsic(jit_float32_acos, f_f) }
+	op_def("fasin") { op_values(float32, float32),
+			  op_intrinsic(jit_float32_asin, f_f) }
+	op_def("fatan") { op_values(float32, float32),
+			  op_intrinsic(jit_float32_atan, f_f) }
+	op_def("fatan2") { op_values(float32, float32, float32),
+			   op_intrinsic(jit_float32_atan2, f_ff) }
+	op_def("fceil") { op_values(float32, float32),
+			  op_intrinsic(jit_float32_ceil, f_f) }
+	op_def("fcos") { op_values(float32, float32),
+			 op_intrinsic(jit_float32_cos, f_f) }
+	op_def("fcosh") { op_values(float32, float32),
+			  op_intrinsic(jit_float32_cosh, f_f) }
+	op_def("fexp") { op_values(float32, float32),
+			 op_intrinsic(jit_float32_exp, f_f) }
+	op_def("ffloor") { op_values(float32, float32),
+			   op_intrinsic(jit_float32_floor, f_f) }
+	op_def("flog") { op_values(float32, float32),
+			 op_intrinsic(jit_float32_log, f_f) }
+	op_def("flog10") { op_values(float32, float32),
+			   op_intrinsic(jit_float32_log10, f_f) }
+	op_def("fpow") { op_values(float32, float32, float32),
+			 op_intrinsic(jit_float32_pow, f_ff) }
+	op_def("frint") { op_values(float32, float32),
+			  op_intrinsic(jit_float32_rint, f_f) }
+	op_def("fround") { op_values(float32, float32),
+			   op_intrinsic(jit_float32_round, f_f) }
+	op_def("fsin") { op_values(float32, float32),
+			 op_intrinsic(jit_float32_sin, f_f) }
+	op_def("fsinh") { op_values(float32, float32),
+			  op_intrinsic(jit_float32_sinh, f_f) }
+	op_def("fsqrt") { op_values(float32, float32),
+			  op_intrinsic(jit_float32_sqrt, f_f) }
+	op_def("ftan") { op_values(float32, float32),
+			 op_intrinsic(jit_float32_tan, f_f) }
+	op_def("ftanh") { op_values(float32, float32),
+			  op_intrinsic(jit_float32_tanh, f_f) }
+	op_def("ftrunc") { op_values(float32, float32),
+			   op_intrinsic(jit_float32_trunc, f_f) }
+	op_def("dacos") { op_values(float64, float64),
+			  op_intrinsic(jit_float64_acos, d_d) }
+	op_def("dasin") { op_values(float64, float64),
+			  op_intrinsic(jit_float64_asin, d_d) }
+	op_def("datan") { op_values(float64, float64),
+			  op_intrinsic(jit_float64_atan, d_d) }
+	op_def("datan2") { op_values(float64, float64, float64),
+			   op_intrinsic(jit_float64_atan2, d_dd) }
+	op_def("dceil") { op_values(float64, float64),
+			  op_intrinsic(jit_float64_ceil, d_d) }
+	op_def("dcos") { op_values(float64, float64),
+			 op_intrinsic(jit_float64_cos, d_d) }
+	op_def("dcosh") { op_values(float64, float64),
+			  op_intrinsic(jit_float64_cosh, d_d) }
+	op_def("dexp") { op_values(float64, float64),
+			 op_intrinsic(jit_float64_exp, d_d) }
+	op_def("dfloor") { op_values(float64, float64),
+			   op_intrinsic(jit_float64_floor, d_d) }
+	op_def("dlog") { op_values(float64, float64),
+			 op_intrinsic(jit_float64_log, d_d) }
+	op_def("dlog10") { op_values(float64, float64),
+			   op_intrinsic(jit_float64_log10, d_d) }
+	op_def("dpow") { op_values(float64, float64, float64),
+			 op_intrinsic(jit_float64_pow, d_dd) }
+	op_def("drint") { op_values(float64, float64),
+			  op_intrinsic(jit_float64_rint, d_d) }
+	op_def("dround") { op_values(float64, float64),
+			   op_intrinsic(jit_float64_round, d_d) }
+	op_def("dsin") { op_values(float64, float64),
+			 op_intrinsic(jit_float64_sin, d_d) }
+	op_def("dsinh") { op_values(float64, float64),
+			  op_intrinsic(jit_float64_sinh, d_d) }
+	op_def("dsqrt") { op_values(float64, float64),
+			  op_intrinsic(jit_float64_sqrt, d_d) }
+	op_def("dtan") { op_values(float64, float64),
+			 op_intrinsic(jit_float64_tan, d_d) }
+	op_def("dtanh") { op_values(float64, float64),
+			  op_intrinsic(jit_float64_tanh, d_d) }
+	op_def("dtrunc") { op_values(float64, float64),
+			   op_intrinsic(jit_float64_trunc, d_d) }
+	op_def("nfacos") { op_values(nfloat, nfloat),
+			   op_intrinsic(jit_nfloat_acos, D_D) }
+	op_def("nfasin") { op_values(nfloat, nfloat),
+			   op_intrinsic(jit_nfloat_asin, D_D) }
+	op_def("nfatan") { op_values(nfloat, nfloat),
+			   op_intrinsic(jit_nfloat_atan, D_D) }
+	op_def("nfatan2") { op_values(nfloat, nfloat, nfloat),
+			    op_intrinsic(jit_nfloat_atan2, D_DD) }
+	op_def("nfceil") { op_values(nfloat, nfloat),
+			   op_intrinsic(jit_nfloat_ceil, D_D) }
+	op_def("nfcos") { op_values(nfloat, nfloat),
+			  op_intrinsic(jit_nfloat_cos, D_D) }
+	op_def("nfcosh") { op_values(nfloat, nfloat),
+			   op_intrinsic(jit_nfloat_cosh, D_D) }
+	op_def("nfexp") { op_values(nfloat, nfloat),
+			  op_intrinsic(jit_nfloat_exp, D_D) }
+	op_def("nffloor") { op_values(nfloat, nfloat),
+			    op_intrinsic(jit_nfloat_floor, D_D) }
+	op_def("nflog") { op_values(nfloat, nfloat),
+			  op_intrinsic(jit_nfloat_log, D_D) }
+	op_def("nflog10") { op_values(nfloat, nfloat),
+			    op_intrinsic(jit_nfloat_log10, D_D) }
+	op_def("nfpow") { op_values(nfloat, nfloat, nfloat),
+			  op_intrinsic(jit_nfloat_pow, D_DD) }
+	op_def("nfrint") { op_values(nfloat, nfloat),
+			   op_intrinsic(jit_nfloat_rint, D_D) }
+	op_def("nfround") { op_values(nfloat, nfloat),
+			    op_intrinsic(jit_nfloat_round, D_D) }
+	op_def("nfsin") { op_values(nfloat, nfloat),
+			  op_intrinsic(jit_nfloat_sin, D_D) }
+	op_def("nfsinh") { op_values(nfloat, nfloat),
+			   op_intrinsic(jit_nfloat_sinh, D_D) }
+	op_def("nfsqrt") { op_values(nfloat, nfloat),
+			   op_intrinsic(jit_nfloat_sqrt, D_D) }
+	op_def("nftan") { op_values(nfloat, nfloat),
+			  op_intrinsic(jit_nfloat_tan, D_D) }
+	op_def("nftanh") { op_values(nfloat, nfloat),
+			   op_intrinsic(jit_nfloat_tanh, D_D) }
+	op_def("nftrunc") { op_values(nfloat, nfloat),
+			    op_intrinsic(jit_nfloat_trunc, D_D) }
+	/*
+	 * Absolute, minimum, maximum, and sign.
+	 */
+	op_def("iabs") { op_values(int, int),
+			 op_intrinsic(jit_int_abs, i_i) }
+	op_def("labs") { op_values(long, long),
+			 op_intrinsic(jit_long_abs, l_l) }
+	op_def("fabs") { op_values(float32, float32),
+			 op_intrinsic(jit_float32_abs, f_f) }
+	op_def("dabs") { op_values(float64, float64),
+			 op_intrinsic(jit_float64_abs, d_d) }
+	op_def("nfabs") { op_values(nfloat, nfloat),
+			  op_intrinsic(jit_nfloat_abs, D_D) }
+	op_def("imin") { op_values(int, int, int),
+			 op_intrinsic(jit_int_min, i_ii) }
+	op_def("imin_un") { op_values(int, int, int),
+			    op_intrinsic(jit_uint_min, I_II) }
+	op_def("lmin") { op_values(long, long, long),
+			 op_intrinsic(jit_long_min, l_ll) }
+	op_def("lmin_un") { op_values(long, long, long),
+			    op_intrinsic(jit_ulong_min, L_LL) }
+	op_def("fmin") { op_values(float32, float32, float32),
+			 op_intrinsic(jit_float32_min, f_ff) }
+	op_def("dmin") { op_values(float64, float64, float64),
+			 op_intrinsic(jit_float64_min, d_dd) }
+	op_def("nfmin") { op_values(nfloat, nfloat, nfloat),
+			  op_intrinsic(jit_nfloat_min, D_DD) }
+	op_def("imax") { op_values(int, int, int),
+			 op_intrinsic(jit_int_max, i_ii) }
+	op_def("imax_un") { op_values(int, int, int),
+			    op_intrinsic(jit_uint_max, I_II) }
+	op_def("lmax") { op_values(long, long, long),
+			 op_intrinsic(jit_long_max, l_ll) }
+	op_def("lmax_un") { op_values(long, long, long),
+			    op_intrinsic(jit_ulong_max, L_LL) }
+	op_def("fmax") { op_values(float32, float32, float32),
+			 op_intrinsic(jit_float32_max, f_ff) }
+	op_def("dmax") { op_values(float64, float64, float64),
+			 op_intrinsic(jit_float64_max, d_dd) }
+	op_def("nfmax") { op_values(nfloat, nfloat, nfloat),
+			  op_intrinsic(jit_nfloat_max, D_DD) }
+	op_def("isign") { op_values(int, int),
+			  op_intrinsic(jit_int_sign, i_i) }
+	op_def("lsign") { op_values(int, long),
+			  op_intrinsic(jit_long_sign, i_l) }
+	op_def("fsign") { op_values(int, float32),
+			  op_intrinsic(jit_float32_sign, i_f) }
+	op_def("dsign") { op_values(int, float64),
+			  op_intrinsic(jit_float64_sign, i_d) }
+	op_def("nfsign") { op_values(int, nfloat),
+			   op_intrinsic(jit_nfloat_sign, i_D) }
+	/*
+	 * Pointer check opcodes.
+	 */
+	op_def("check_null") { op_values(empty, ptr) }
+	/*
+	 * Function calls.
+	 */
+	op_def("call") { op_type(call) }
+	op_def("call_tail") { op_type(call) }
+	op_def("call_indirect") { op_values(empty, ptr), "INDIRECT_ARGS" }
+	op_def("call_indirect_tail") { op_values(empty, ptr), "INDIRECT_ARGS" }
+	op_def("call_vtable_ptr") { op_values(empty, ptr) }
+	op_def("call_vtable_ptr_tail") { op_values(empty, ptr) }
+	op_def("call_external") { op_type(call_external) }
+	op_def("call_external_tail") { op_type(call_external) }
+	op_def("return") { }
+	op_def("return_int") { op_values(empty, int) }
+	op_def("return_long") { op_values(empty, long) }
+	op_def("return_float32") { op_values(empty, float32) }
+	op_def("return_float64") { op_values(empty, float64) }
+	op_def("return_nfloat") { op_values(empty, nfloat) }
+	op_def("return_small_struct") { op_values(empty, ptr, ptr), "NINT_ARG" }
+	op_def("import") { op_values(ptr, any, any) }
+	/*
+	 * Exception handling.
+	 */
+	op_def("throw") { op_values(empty, ptr) }
+	op_def("rethrow") { op_values(empty, ptr) }
+	op_def("load_pc") { op_values(ptr) }
+	op_def("load_exception_pc") { op_values(ptr) }
+	op_def("enter_finally") { }
+	op_def("leave_finally") { }
+	op_def("call_finally") { op_type(branch) }
+	op_def("enter_filter") { op_values(any) }
+	op_def("leave_filter") { op_values(empty, any) }
+	op_def("call_filter") { op_type(branch), op_values(empty, any) }
+	op_def("call_filter_return") { op_values(any) }
+	op_def("address_of_label") { op_type(address_of_label), op_values(ptr) }
+	/*
+	 * Data manipulation.
+	 */
+	op_def("copy_load_sbyte") { op_values(int, int) }
+	op_def("copy_load_ubyte") { op_values(int, int) }
+	op_def("copy_load_short") { op_values(int, int) }
+	op_def("copy_load_ushort") { op_values(int, int) }
+	op_def("copy_int", =) { op_values(int, int) }
+	op_def("copy_long", =) { op_values(long, long) }
+	op_def("copy_float32", =) { op_values(float32, float32) }
+	op_def("copy_float64", =) { op_values(float64, float64) }
+	op_def("copy_nfloat", =) { op_values(nfloat, nfloat) }
+	op_def("copy_struct", =) { op_values(ptr, ptr), "NINT_ARG" }
+	op_def("copy_store_byte") { op_values(int, int) }
+	op_def("copy_store_short") { op_values(int, int) }
+	op_def("address_of", address_of) { op_values(ptr, any) }
+	/*
+	 * Incoming registers, outgoing registers, and stack pushes.
+	 */
+	op_def("incoming_reg") { op_type(reg) }
+	op_def("incoming_frame_posn") { op_values(empty, any, int) }
+	op_def("outgoing_reg") { op_type(reg) }
+	op_def("return_reg") { op_type(reg) }
+	op_def("retrieve_frame_pointer") { op_values(any, empty, empty) }
+	op_def("push_int") { op_values(empty, int) }
+	op_def("push_long") { op_values(empty, long) }
+	op_def("push_float32") { op_values(empty, float32) }
+	op_def("push_float64") { op_values(empty, float64) }
+	op_def("push_nfloat") { op_values(empty, nfloat) }
+	op_def("push_struct") { op_values(empty, any, ptr), "NINT_ARG" }
+	op_def("pop_stack") { op_values(empty, int), "NINT_ARG" }
+	op_def("flush_small_struct") { op_values(empty, any), "NINT_ARG" }
+	op_def("set_param_int") { op_values(empty, int, ptr) }
+	op_def("set_param_long") { op_values(empty, long, ptr) }
+	op_def("set_param_float32") { op_values(empty, float32, ptr) }
+	op_def("set_param_float64") { op_values(empty, float64, ptr) }
+	op_def("set_param_nfloat") { op_values(empty, nfloat, ptr) }
+	op_def("set_param_struct") { op_values(ptr, ptr, ptr) }
+	op_def("push_return_area_ptr") { }
+	/*
+	 * Pointer-relative loads and stores.
+	 */
+	op_def("load_relative_sbyte") { op_values(int, ptr, int), "NINT_ARG" }
+	op_def("load_relative_ubyte") { op_values(int, ptr, int), "NINT_ARG" }
+	op_def("load_relative_short") { op_values(int, ptr, int), "NINT_ARG" }
+	op_def("load_relative_ushort") { op_values(int, ptr, int), "NINT_ARG" }
+	op_def("load_relative_int") { op_values(int, ptr, int), "NINT_ARG" }
+	op_def("load_relative_long") { op_values(long, ptr, int), "NINT_ARG" }
+	op_def("load_relative_float32") { op_values(float32, ptr, int), "NINT_ARG" }
+	op_def("load_relative_float64") { op_values(float64, ptr, int), "NINT_ARG" }
+	op_def("load_relative_nfloat") { op_values(nfloat, ptr, int), "NINT_ARG" }
+	op_def("load_relative_struct") { op_values(any, ptr, int), "NINT_ARG_TWO" }
+	op_def("store_relative_byte") { op_values(ptr, int, int), "NINT_ARG" }
+	op_def("store_relative_short") { op_values(ptr, int, int), "NINT_ARG" }
+	op_def("store_relative_int") { op_values(ptr, int, int), "NINT_ARG"}
+	op_def("store_relative_long") { op_values(ptr, long, int), "NINT_ARG" }
+	op_def("store_relative_float32") { op_values(ptr, float32, int), "NINT_ARG" }
+	op_def("store_relative_float64") { op_values(ptr, float64, int), "NINT_ARG" }
+	op_def("store_relative_nfloat") { op_values(ptr, nfloat, int), "NINT_ARG" }
+	op_def("store_relative_struct") { op_values(ptr, any, int), "NINT_ARG_TWO" }
+	op_def("add_relative") { op_values(ptr, ptr, int), "NINT_ARG" }
+	/*
+	 * Array element loads and stores.
+	 */
+	op_def("load_element_sbyte") { op_values(int, ptr, int) }
+	op_def("load_element_ubyte") { op_values(int, ptr, int) }
+	op_def("load_element_short") { op_values(int, ptr, int) }
+	op_def("load_element_ushort") { op_values(int, ptr, int) }
+	op_def("load_element_int") { op_values(int, ptr, int) }
+	op_def("load_element_long") { op_values(long, ptr, int) }
+	op_def("load_element_float32") { op_values(float32, ptr, int) }
+	op_def("load_element_float64") { op_values(float64, ptr, int) }
+	op_def("load_element_nfloat") { op_values(nfloat, ptr, int) }
+	op_def("store_element_byte") { op_values(ptr, int, int) }
+	op_def("store_element_short") { op_values(ptr, int, int) }
+	op_def("store_element_int") { op_values(ptr, int, int) }
+	op_def("store_element_long") { op_values(ptr, int, long) }
+	op_def("store_element_float32") { op_values(ptr, int, float32) }
+	op_def("store_element_float64") { op_values(ptr, int, float64) }
+	op_def("store_element_nfloat") { op_values(ptr, int, nfloat) }
+	/*
+	 * Block operations.
+	 */
+	op_def("memcpy") { op_values(ptr, ptr, ptr) }
+	op_def("memmove") { op_values(ptr, ptr, ptr) }
+	op_def("memset") { op_values(ptr, int, ptr) }
+	/*
+	 * Allocate memory from the stack.
+	 */
+	op_def("alloca") { op_values(ptr, ptr) }
+	/*
+	 * Debugging support.
+	 */
+	op_def("mark_offset") { op_values(empty, int) }
+	op_def("mark_breakpoint") { op_values(empty, ptr, ptr) }
+	/*
+	 * Switch statement support.
+	 */
+	op_def("jump_table") { op_type(jump_table), op_values(empty, ptr, int) }
+}
+
+%[
+/*
+ * Opcode information.
+ */
+typedef struct jit_opcode_info jit_opcode_info_t;
+struct jit_opcode_info
+{
+	const char *name;
+	int			flags;
+};
+#define	JIT_OPCODE_DEST_MASK			0x0000000F
+#define	JIT_OPCODE_DEST_EMPTY			0x00000000
+#define	JIT_OPCODE_DEST_INT				0x00000001
+#define	JIT_OPCODE_DEST_LONG			0x00000002
+#define	JIT_OPCODE_DEST_FLOAT32			0x00000003
+#define	JIT_OPCODE_DEST_FLOAT64			0x00000004
+#define	JIT_OPCODE_DEST_NFLOAT			0x00000005
+#define	JIT_OPCODE_DEST_ANY				0x00000006
+#define	JIT_OPCODE_SRC1_MASK			0x000000F0
+#define	JIT_OPCODE_SRC1_EMPTY			0x00000000
+#define	JIT_OPCODE_SRC1_INT				0x00000010
+#define	JIT_OPCODE_SRC1_LONG			0x00000020
+#define	JIT_OPCODE_SRC1_FLOAT32			0x00000030
+#define	JIT_OPCODE_SRC1_FLOAT64			0x00000040
+#define	JIT_OPCODE_SRC1_NFLOAT			0x00000050
+#define	JIT_OPCODE_SRC1_ANY				0x00000060
+#define	JIT_OPCODE_SRC2_MASK			0x00000F00
+#define	JIT_OPCODE_SRC2_EMPTY			0x00000000
+#define	JIT_OPCODE_SRC2_INT				0x00000100
+#define	JIT_OPCODE_SRC2_LONG			0x00000200
+#define	JIT_OPCODE_SRC2_FLOAT32			0x00000300
+#define	JIT_OPCODE_SRC2_FLOAT64			0x00000400
+#define	JIT_OPCODE_SRC2_NFLOAT			0x00000500
+#define	JIT_OPCODE_SRC2_ANY				0x00000600
+#define	JIT_OPCODE_IS_BRANCH			0x00001000
+#define	JIT_OPCODE_IS_CALL				0x00002000
+#define	JIT_OPCODE_IS_CALL_EXTERNAL		0x00004000
+#define	JIT_OPCODE_IS_REG				0x00008000
+#define	JIT_OPCODE_IS_ADDROF_LABEL		0x00010000
+#define JIT_OPCODE_IS_JUMP_TABLE		0x00020000
+#define	JIT_OPCODE_OPER_MASK			0x01F00000
+#define	JIT_OPCODE_OPER_NONE			0x00000000
+#define	JIT_OPCODE_OPER_ADD				0x00100000
+#define	JIT_OPCODE_OPER_SUB				0x00200000
+#define	JIT_OPCODE_OPER_MUL				0x00300000
+#define	JIT_OPCODE_OPER_DIV				0x00400000
+#define	JIT_OPCODE_OPER_REM				0x00500000
+#define	JIT_OPCODE_OPER_NEG				0x00600000
+#define	JIT_OPCODE_OPER_AND				0x00700000
+#define	JIT_OPCODE_OPER_OR				0x00800000
+#define	JIT_OPCODE_OPER_XOR				0x00900000
+#define	JIT_OPCODE_OPER_NOT				0x00A00000
+#define	JIT_OPCODE_OPER_EQ				0x00B00000
+#define	JIT_OPCODE_OPER_NE				0x00C00000
+#define	JIT_OPCODE_OPER_LT				0x00D00000
+#define	JIT_OPCODE_OPER_LE				0x00E00000
+#define	JIT_OPCODE_OPER_GT				0x00F00000
+#define	JIT_OPCODE_OPER_GE				0x01000000
+#define	JIT_OPCODE_OPER_SHL				0x01100000
+#define	JIT_OPCODE_OPER_SHR				0x01200000
+#define	JIT_OPCODE_OPER_SHR_UN			0x01300000
+#define	JIT_OPCODE_OPER_COPY			0x01400000
+#define	JIT_OPCODE_OPER_ADDRESS_OF		0x01500000
+#ifdef JIT_NATIVE_INT32
+#define	JIT_OPCODE_DEST_PTR				JIT_OPCODE_DEST_INT
+#define	JIT_OPCODE_SRC1_PTR				JIT_OPCODE_SRC1_INT
+#define	JIT_OPCODE_SRC2_PTR				JIT_OPCODE_SRC2_INT
+#else
+#define	JIT_OPCODE_DEST_PTR				JIT_OPCODE_DEST_LONG
+#define	JIT_OPCODE_SRC1_PTR				JIT_OPCODE_SRC1_LONG
+#define	JIT_OPCODE_SRC2_PTR				JIT_OPCODE_SRC2_LONG
+#endif
+JIT_EXPORT_DATA jit_opcode_info_t const jit_opcodes[JIT_OP_NUM_OPCODES];
+
+#include "jit/jit-opcode-compat.h"
+
+#ifdef	__cplusplus
+};
+#endif
+
+#endif /* _JIT_OPCODE_H */
+%]
