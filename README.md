@@ -30,12 +30,12 @@ func main() {
   defer ctx.Close()
   f, err := ctx.Build(func(ctx *jit.Context) (*jit.Function, error) {
     f := ctx.CreateFunction([]*jit.Type{jit.TypeInt, jit.TypeInt, jit.TypeInt}, jit.TypeInt)
-    x := f.GetParam(0)
-    y := f.GetParam(1)
-    z := f.GetParam(2)
+    x := f.Param(0)
+    y := f.Param(1)
+    z := f.Param(2)
     temp1 := f.Mul(x, y)
     temp2 := f.Add(temp1, z)
-    f.Ret(temp2)
+    f.Return(temp2)
     f.Compile()
     return f, nil
   })
@@ -57,7 +57,7 @@ import (
   "github.com/goccy/go-jit"
 )
 
-// func f() {
+// func f() int {
 //   return callback(7, 8)
 // }
 
@@ -77,7 +77,7 @@ func main() {
     if err != nil {
       return nil, err
     }
-    f.Ret(rvalues[0])
+    f.Return(rvalues[0])
     f.Compile()
     return f, nil
   })
