@@ -6,7 +6,7 @@ import (
 	"github.com/goccy/go-jit"
 )
 
-// func f() {
+// func f() int {
 //   return callback(7, 8)
 // }
 
@@ -26,7 +26,7 @@ func main() {
 		if err != nil {
 			return nil, err
 		}
-		f.Ret(rvalues[0])
+		f.Return(rvalues[0])
 		f.Compile()
 		return f, nil
 	})

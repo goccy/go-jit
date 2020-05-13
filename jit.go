@@ -80,7 +80,7 @@ func (f *Function) GoCall(fn interface{}, args []*Value) ([]*Value, error) {
 	return toValues(values), nil
 }
 
-func (f *Function) Ret(v *Value) {
+func (f *Function) Return(v *Value) {
 	f.Function.Return(v.Value)
 }
 
@@ -96,7 +96,7 @@ func (f *Function) CreateIntValue(v int) *Value {
 	return &Value{f.Function.CreateIntValue(v)}
 }
 
-func (f *Function) GetParam(v uint) *Value {
+func (f *Function) Param(v uint) *Value {
 	return &Value{f.Function.Param(v)}
 }
 
