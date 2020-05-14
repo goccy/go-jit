@@ -1,5 +1,7 @@
 # go-jit
 
+[![GoDoc](https://godoc.org/github.com/goccy/go-jit?status.svg)](https://pkg.go.dev/github.com/goccy/go-jit?tab=doc)
+
 JIT compile library for Go
 
 # Status
