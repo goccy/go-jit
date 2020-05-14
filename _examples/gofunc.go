@@ -33,5 +33,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("result = ", f.Run(nil))
+	fmt.Println("result = ", f.Run())
 }

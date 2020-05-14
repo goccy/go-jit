@@ -17,8 +17,7 @@ import (
 )
 
 type Type struct {
-	c    C.jit_type_t
-	size uint
+	c C.jit_type_t
 }
 
 type Types []*Type
@@ -86,17 +85,19 @@ var (
 
 var (
 	ptrsize         = uint(unsafe.Sizeof(unsafe.Pointer(nil)))
-	TypeInt         = &Type{C.jit_type_int, uint(unsafe.Sizeof(C.int(0)))}
-	TypeVoidPtr     = &Type{C.jit_type_void_ptr, ptrsize}
-	TypeCharPtr     = &Type{C.jit_type_create_pointer(C.jit_type_sys_char, 0), ptrsize}
-	TypeGoInt       = &Type{C.jit_type_sys_longlong, uint(unsafe.Sizeof(int(0)))}
+	TypeInt         = &Type{C.jit_type_int}
+	TypeVoidPtr     = &Type{C.jit_type_void_ptr}
+	TypeCharPtr     = &Type{C.jit_type_create_pointer(C.jit_type_sys_char, 0)}
+	TypeGoInt       = &Type{C.jit_type_sys_longlong}
 	TypeGoString    = CreateStruct([]*Type{TypeCharPtr, TypeInt}, 0)
 	TypeGoInterface = CreateStruct([]*Type{TypeVoidPtr, TypeVoidPtr}, 0)
-	TypeVoid        = &Type{C.jit_type_void, 0}
+	TypeVoid        = &Type{C.jit_type_void}
+	TypeFloat32     = &Type{C.jit_type_float32}
+	TypeFloat64     = &Type{C.jit_type_float64}
 )
 
 func toType(c C.jit_type_t) *Type {
-	return &Type{c, 0}
+	return &Type{c}
 }
 
 func ReflectTypeToType(typ reflect.Type) *Type {
